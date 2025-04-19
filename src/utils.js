@@ -31,8 +31,8 @@ playerNames =
 		"Adelind",
 		"Adeline",
 		"Adella",
-		"Adelle",
-		"Adena",
+		//"Adelle",
+		// "Adena",
 		// "Adey",
 		// "Adi",
 		// "Aaren",
@@ -102,8 +102,8 @@ playerNames =
 		// "Alake",
 		// "Alala",
 	]
-coordinator(playerNames, 2, 5, 3, [1, 2, 3, 4, 5])
-function coordinator(entities, entitiesPerTeam, numberOfCourts, rounds, courtNumbers) {
+coordinator(playerNames, 2, 3, [1, 2, 3, 4, 5], true)
+function coordinator(entities, entitiesPerTeam, rounds, courtNumbers, shufflePlayers) {
 	//TODO: add in functionality to consider player level and avoid grouping better players together (this is more for blind draws and such)
 	//take in array of players, randomize the order, and then split into teams.
 	//! dictate how many rounds there will be by dividing number of courts by players.
@@ -112,34 +112,43 @@ function coordinator(entities, entitiesPerTeam, numberOfCourts, rounds, courtNum
 	//if i have 5 courts, and 2 teams can play per court, how many games on each court per round do i need for everyone to play
 	// 1 court can have 2 teams, so 5 courts can have 10 teams.
 	//TODO:: Have to add in functionality for overflow. we need every player to play each round, automatically iterate through all courts assigning players to courts for each game. Maybe we have to change some of these god awful for loops and nested for loops idk i took an edible
-	let maxTeamsToPlayPergame = numberOfCourts * 2;
-	let numberOfGamesPerRound = Math.floor(numberOfTeams / maxTeamsToPlayPergame);
 	let results = {};
 	for (let round = 1; round <= rounds; round++) {
 		let participants = entities.slice();
 		shuffle(participants)
 		results["Round " + round] = {};
-		for (let courtNumber = 0; courtNumber < courtNumbers.length; courtNumber++) {
-			results["Round " + round]["Court " + courtNumbers[courtNumber]] = {};
-			for (let gameNumber = 1; gameNumber <= numberOfGamesPerRound; gameNumber++) {
-				results["Round " + round]["Court " + courtNumbers[courtNumber]]["Game Number " + gameNumber] = {};
-				for (let team = 1; team <= 2; team++) {
-					results["Round " + round]["Court " + courtNumbers[courtNumber]]["Game Number " + gameNumber]["Team " + team] = participants.splice(0, entitiesPerTeam);
-				}
-			}
-		}
+		let teams = [];
+		if (shufflePlayers) teams = randomTeamAssigner(participants, entitiesPerTeam);
+		else teams = participants;
+		results["Round " + round] = courtAssigner(teams, courtNumbers);
 	}
-	console.log(results)
+
+	console.log(results);
 }
-
-// shuffle(entities)
-//now we have the total number of games per round on each court for every team to play once.]
-
-// if (entities.length < entitiesPerTeam * numberOfTeams) {
-// 	//! may have to add in an option to fill with an empty entity per team.
-// 	console.error("Not enough players to fill all teams");
-// 	return;
-// }
+function courtAssigner(teams, courts) {
+	let results = {};
+	let game = 1;
+	let court = 0;
+	while (teams.length > 0) {
+		if (results["Court " + courts[court]] === undefined) results["Court " + courts[court]] = {};
+		else game = parseInt(Object.keys(results["Court " + courts[court]])[Object.keys(results["Court " + courts[court]]).length - 1].match(/\d+/)[0]) + 1;
+		if (results["Court " + courts[court]]["Game " + game] === undefined) results["Court " + courts[court]]["Game " + game] = {};
+		results["Court " + courts[court]]["Game " + game]["Team 1"] = teams.pop();
+		results["Court " + courts[court]]["Game " + game]["Team 2"] = teams.pop();
+		court++;
+		if (court >= courts.length) court = 0;
+	}
+	return results;
+}
+function randomTeamAssigner(participants, entitiesPerTeam) {
+	teams = [];
+	while (participants.length > 0) {
+		let team = participants.splice(0, entitiesPerTeam);
+		if (team.length < entitiesPerTeam) team.push("PLACEHOLDER");
+		teams.push(team);
+	}
+	return teams;
+}
 
 function shuffle(array) {
 	for (let i = array.length - 1; i > 0; i--) {
