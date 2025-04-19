@@ -1,0 +1,26 @@
+{
+  "name": "coordinationstation",
+  "version": "1.0.0",
+  "description": "api tool to coordinate volleyball teams and courts",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surgency23/coordinationstation.git"
+  },
+  "author": "Alex Pappa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surgency23/coordinationstation/issues"
+  },
+  "homepage": "https://github.com/surgency23/coordinationstation#readme",
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1"
+  }
+}
