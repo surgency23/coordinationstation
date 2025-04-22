@@ -31,7 +31,7 @@ playerNames =
 		"Adelind",
 		"Adeline",
 		"Adella",
-		//"Adelle",
+		// "Adelle",
 		// "Adena",
 		// "Adey",
 		// "Adi",
@@ -100,30 +100,29 @@ playerNames =
 		// "Alaina",
 		// "Alair",
 		// "Alake",
-		// "Alala",
 	]
-coordinator(playerNames, 2, 3, [1, 2, 3, 4, 5], true)
 function coordinator(entities, entitiesPerTeam, rounds, courtNumbers, shufflePlayers) {
 	//TODO: add in functionality to consider player level and avoid grouping better players together (this is more for blind draws and such)
 	//take in array of players, randomize the order, and then split into teams.
 	//! dictate how many rounds there will be by dividing number of courts by players.
-
-	let numberOfTeams = Math.floor(entities.length / entitiesPerTeam)
 	//if i have 5 courts, and 2 teams can play per court, how many games on each court per round do i need for everyone to play
 	// 1 court can have 2 teams, so 5 courts can have 10 teams.
 	//TODO:: Have to add in functionality for overflow. we need every player to play each round, automatically iterate through all courts assigning players to courts for each game. Maybe we have to change some of these god awful for loops and nested for loops idk i took an edible
 	let results = {};
+	console.log(entities.length)
 	for (let round = 1; round <= rounds; round++) {
 		let participants = entities.slice();
-		shuffle(participants)
 		results["Round " + round] = {};
 		let teams = [];
-		if (shufflePlayers) teams = randomTeamAssigner(participants, entitiesPerTeam);
+		if (shufflePlayers) {
+			shuffle(participants)
+			teams = randomTeamAssigner(participants, entitiesPerTeam);
+		}
 		else teams = participants;
 		results["Round " + round] = courtAssigner(teams, courtNumbers);
 	}
-
 	console.log(results);
+	return results
 }
 function courtAssigner(teams, courts) {
 	let results = {};
@@ -144,7 +143,9 @@ function randomTeamAssigner(participants, entitiesPerTeam) {
 	teams = [];
 	while (participants.length > 0) {
 		let team = participants.splice(0, entitiesPerTeam);
-		if (team.length < entitiesPerTeam) team.push("PLACEHOLDER");
+		if (team.length < entitiesPerTeam) {
+			team.push("PLACEHOLDER");
+		}
 		teams.push(team);
 	}
 	return teams;
